@@ -1,0 +1,21 @@
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Project specific root bypasses
+demo/target/
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+demo/.env
