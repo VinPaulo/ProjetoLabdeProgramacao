@@ -30,7 +30,7 @@ const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           <UserIcon size={40} color="#3b82f6" />
         </div>
         <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-          Olá, {user.name}!
+          Olá, {user.username}!
         </h1>
         <p style={{ color: '#94a3b8' }}>
           Você está autenticado no Sistema LabProg.

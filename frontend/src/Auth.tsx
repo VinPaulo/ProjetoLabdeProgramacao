@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { API_BASE_URL } from './config';
+import authService from './services/authService';
 import { LogIn, UserPlus, Mail, Lock, User as UserIcon, Loader2 } from 'lucide-react';
 
 interface AuthProps {
@@ -20,14 +19,12 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
     setLoading(true);
     setMessage('');
 
-    const endpoint = isLogin ? '/login' : '/register';
-    const payload = isLogin ? { email, password } : { name, email, password };
-
     try {
-      const response = await axios.post(`${API_BASE_URL}${endpoint}`, payload);
       if (isLogin) {
-        onLoginSuccess(response.data);
+        const userData = await authService.login(email, password);
+        onLoginSuccess(userData);
       } else {
+        await authService.register(name, email, password);
         setMessage('Cadastro realizado! Agora faça login.');
         setIsLogin(true);
         setEmail('');
@@ -52,7 +49,7 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
     }}>
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
         <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem', color: '#f8fafc' }}>
-          {isLogin ? 'Bem-vindo de volta' : 'Crie sua conta'}
+          {isLogin ? 'Bem-vindo' : 'Crie sua conta'}
         </h1>
         <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
           {isLogin ? 'Entre com suas credenciais para acessar' : 'Preencha os dados abaixo para começar'}

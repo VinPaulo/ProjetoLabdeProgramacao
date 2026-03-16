@@ -1,15 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Auth from './Auth'
 import Dashboard from './Dashboard'
+import authService from './services/authService'
 
 function App() {
   const [user, setUser] = useState<any>(null)
+
+  useEffect(() => {
+    const currentUser = authService.getCurrentUser()
+    if (currentUser) {
+      setUser(currentUser)
+    }
+  }, [])
 
   const handleLoginSuccess = (userData: any) => {
     setUser(userData)
   }
 
   const handleLogout = () => {
+    authService.logout()
     setUser(null)
   }
 
