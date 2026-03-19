@@ -1,43 +1,25 @@
-import React, { useState } from 'react';
-import authService from './services/authService';
-import { LogIn, UserPlus, Mail, Lock, User as UserIcon, Loader2 } from 'lucide-react';
+import React from 'react';
+import { LogIn, UserPlus, Lock, User as UserIcon, Loader2, Mail } from 'lucide-react';
+import { useAuth } from './hooks/useAuth';
 
 interface AuthProps {
   onLoginSuccess: (user: any) => void;
 }
 
 const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
-
-    try {
-      if (isLogin) {
-        const userData = await authService.login(email, password);
-        onLoginSuccess(userData);
-      } else {
-        await authService.register(name, email, password);
-        setMessage('Cadastro realizado! Agora faça login.');
-        setIsLogin(true);
-        setEmail('');
-        setPassword('');
-      }
-    } catch (error: any) {
-      console.error('Auth Error:', error);
-      const errorMsg = error.response?.data?.message || error.message || 'Erro de conexão com o servidor';
-      setMessage(errorMsg);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    isLogin,
+    usernameOrEmail,
+    password,
+    name,
+    message,
+    loading,
+    setUsernameOrEmail,
+    setPassword,
+    setName,
+    handleSubmit,
+    toggleLogin
+  } = useAuth(onLoginSuccess);
 
   return (
     <div className="glass" style={{
@@ -47,11 +29,11 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
       maxWidth: '400px',
       transition: 'all 0.3s ease'
     }}>
-      <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 700, marginBottom: '0.5rem', color: '#f8fafc' }}>
+      <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--accent)', letterSpacing: '-0.02em' }}>
           {isLogin ? 'Bem-vindo' : 'Crie sua conta'}
         </h1>
-        <p style={{ color: '#94a3b8', fontSize: '0.9rem' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
           {isLogin ? 'Entre com suas credenciais para acessar' : 'Preencha os dados abaixo para começar'}
         </p>
       </div>
@@ -59,7 +41,7 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
         {!isLogin && (
           <div style={{ position: 'relative' }}>
-            <UserIcon size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+            <UserIcon size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
             <input
               type="text"
               placeholder="Nome completo"
@@ -70,9 +52,9 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
                 width: '100%',
                 padding: '0.75rem 0.75rem 0.75rem 2.5rem',
                 borderRadius: '0.75rem',
-                border: '1px solid rgba(255,255,255,0.1)',
-                backgroundColor: 'rgba(15, 23, 42, 0.5)',
-                color: 'white',
+                border: '1px solid var(--border-subtle)',
+                backgroundColor: 'var(--input-bg)',
+                color: 'var(--text-main)',
                 boxSizing: 'border-box'
               }}
             />
@@ -80,27 +62,31 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
         )}
 
         <div style={{ position: 'relative' }}>
-          <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+          {isLogin ? (
+            <UserIcon size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          ) : (
+            <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
+          )}
           <input
-            type="email"
-            placeholder="E-mail"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
+            type={isLogin ? "text" : "email"}
+            placeholder={isLogin ? "Nome de usuário ou E-mail" : "E-mail válido"}
+            value={usernameOrEmail}
+            onChange={e => setUsernameOrEmail(e.target.value)}
             required
             style={{
               width: '100%',
               padding: '0.75rem 0.75rem 0.75rem 2.5rem',
               borderRadius: '0.75rem',
-              border: '1px solid rgba(255,255,255,0.1)',
-              backgroundColor: 'rgba(15, 23, 42, 0.5)',
-              color: 'white',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--input-bg)',
+              color: 'var(--text-main)',
               boxSizing: 'border-box'
             }}
           />
         </div>
 
         <div style={{ position: 'relative' }}>
-          <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#64748b' }} />
+          <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
           <input
             type="password"
             placeholder="Senha"
@@ -111,9 +97,9 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
               width: '100%',
               padding: '0.75rem 0.75rem 0.75rem 2.5rem',
               borderRadius: '0.75rem',
-              border: '1px solid rgba(255,255,255,0.1)',
-              backgroundColor: 'rgba(15, 23, 42, 0.5)',
-              color: 'white',
+              border: '1px solid var(--border-subtle)',
+              backgroundColor: 'var(--input-bg)',
+              color: 'var(--text-main)',
               boxSizing: 'border-box'
             }}
           />
@@ -123,20 +109,20 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
           type="submit"
           disabled={loading}
           style={{
-            padding: '0.8rem',
+            padding: '1rem',
             borderRadius: '0.75rem',
             border: 'none',
-            backgroundColor: '#3b82f6',
-            color: 'white',
-            fontWeight: 600,
+            backgroundColor: 'var(--accent)',
+            color: 'var(--bg-main)',
+            fontWeight: 700,
             cursor: loading ? 'not-allowed' : 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '0.5rem',
-            marginTop: '0.5rem',
-            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.3)',
-            transition: 'background-color 0.2s'
+            marginTop: '1rem',
+            boxShadow: '0 8px 20px rgba(255, 255, 255, 0.1)',
+            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
           {loading ? <Loader2 size={20} className="animate-spin" /> : isLogin ? <LogIn size={20} /> : <UserPlus size={20} />}
@@ -144,17 +130,20 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
         </button>
       </form>
 
-      <p style={{ textAlign: 'center', marginTop: '1.5rem', color: '#94a3b8', fontSize: '0.9rem' }}>
+      <p style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
         {isLogin ? 'Ainda não tem uma conta?' : 'Já possui uma conta?'}
         <button
-          onClick={() => setIsLogin(!isLogin)}
+          type="button"
+          onClick={toggleLogin}
           style={{
             background: 'none',
             border: 'none',
-            color: '#60a5fa',
+            color: 'var(--accent)',
             cursor: 'pointer',
-            fontWeight: 600,
-            marginLeft: '0.4rem',
+            fontWeight: 700,
+            textDecoration: 'underline',
+            textUnderlineOffset: '4px',
+            marginLeft: '0.5rem',
             padding: 0
           }}
         >
@@ -167,11 +156,11 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
           marginTop: '1.5rem',
           padding: '0.75rem',
           borderRadius: '0.75rem',
-          backgroundColor: message.includes('Erro') ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-          color: message.includes('Erro') ? '#f87171' : '#34d399',
+          backgroundColor: message.includes('Erro') ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255, 255, 255, 0.05)',
+          color: message.includes('Erro') ? '#fca5a5' : 'var(--accent)',
           fontSize: '0.85rem',
           textAlign: 'center',
-          border: `1px solid ${message.includes('Erro') ? 'rgba(239, 68, 68, 0.2)' : 'rgba(16, 185, 129, 0.2)'}`
+          border: `1px solid ${message.includes('Erro') ? 'rgba(239, 68, 68, 0.2)' : 'var(--border-subtle)'}`
         }}>
           {message}
         </div>

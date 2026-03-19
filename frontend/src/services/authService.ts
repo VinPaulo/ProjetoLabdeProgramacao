@@ -2,8 +2,8 @@ import api from './api';
 
 const AUTH_URL = '/auth';
 
-const login = async (email: string, password: String) => {
-  const response = await api.post(`${AUTH_URL}/login`, { email, password });
+const login = async (usernameOrEmail: string, password: String) => {
+  const response = await api.post(`${AUTH_URL}/login`, { usernameOrEmail, password });
   if (response.data.token) {
     localStorage.setItem('user', JSON.stringify(response.data));
   }
