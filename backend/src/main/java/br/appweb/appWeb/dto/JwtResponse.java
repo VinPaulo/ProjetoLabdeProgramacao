@@ -1,20 +1,24 @@
 package br.appweb.appWeb.dto;
 
+import java.util.List;
+
 public class JwtResponse { // DTO para enviar a resposta JWT
     private String token;
     private String type = "Bearer";
     private Long id;
     private String username;
     private String email;
+    private List<String> roles;
 
     public JwtResponse() { // Construtor padrão
     }
 
-    public JwtResponse(String accessToken, Long id, String username, String email) { // Construtor com campos
+    public JwtResponse(String accessToken, Long id, String username, String email, List<String> roles) { // Construtor com campos
         this.token = accessToken;
         this.id = id;
         this.username = username;
         this.email = email;
+        this.roles = roles;
     }
 
     public String getToken() { // Getters e Setters manuais
@@ -55,5 +59,13 @@ public class JwtResponse { // DTO para enviar a resposta JWT
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }

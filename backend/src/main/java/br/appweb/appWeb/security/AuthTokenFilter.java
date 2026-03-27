@@ -52,7 +52,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     }
 
     private String parseJwt(HttpServletRequest request) { // Método que extrai o token JWT
-        String headerAuth = request.getHeader("Autorização"); // Pega o token JWT do header
+        String headerAuth = request.getHeader("Authorization"); // Pega o token JWT do header
 
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) { // Verifica se o token JWT é válido
             return headerAuth.substring(7); // Retorna o token JWT

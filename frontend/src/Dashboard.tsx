@@ -1,81 +1,95 @@
-import React from 'react';
-import { LogOut, Layout, User as UserIcon } from 'lucide-react';
+import React, { useState } from 'react';
+import { LogOut, ShieldCheck } from 'lucide-react';
+import WalletDashboard from './WalletDashboard';
+import TransactionHistory from './TransactionHistory';
+import TransactionForm from './TransactionForm';
 
 interface DashboardProps {
   user: any;
   onLogout: () => void;
+  onAdminClick: () => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
+type WalletView = 'dashboard' | 'history' | 'add';
+
+const Dashboard: React.FC<DashboardProps> = ({ user, onLogout, onAdminClick }) => {
+  const [view, setView] = useState<WalletView>('dashboard');
+  const isAdmin = user.roles && user.roles.includes('ROLE_ADMIN');
+
+  const renderContent = () => {
+    switch (view) {
+      case 'dashboard':
+        return <WalletDashboard user={user} onNavigate={setView} />;
+      case 'history':
+        return <TransactionHistory onBack={() => setView('dashboard')} />;
+      case 'add':
+        return (
+          <TransactionForm 
+            onBack={() => setView('dashboard')} 
+            onSuccess={() => setView('dashboard')} 
+          />
+        );
+      default:
+        return <WalletDashboard user={user} onNavigate={setView} />;
+    }
+  };
+
   return (
-    <div className="glass" style={{
-      padding: '3rem',
-      borderRadius: '1.5rem',
-      width: '100%',
-      maxWidth: '600px',
-      textAlign: 'center'
-    }}>
-      <div style={{ marginBottom: '2rem' }}>
-        <div style={{
-          width: '80px',
-          height: '80px',
-          borderRadius: '50%',
-          backgroundColor: 'var(--input-bg)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          margin: '0 auto 1.5rem',
-          border: '2px solid var(--accent)'
-        }}>
-          <UserIcon size={40} color="var(--accent)" />
-        </div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-          Olá, {user.username}!
-        </h1>
-        <p style={{ color: 'var(--text-muted)' }}>
-          Você está autenticado no Sistema LabProg.
-        </p>
-      </div>
-
-      <div style={{
-        backgroundColor: 'var(--input-bg)',
-        padding: '1.5rem',
-        borderRadius: '1.25rem',
-        marginBottom: '2.5rem',
-        textAlign: 'left',
-        border: '1px solid var(--border-subtle)'
+    <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '2rem' }}>
+      <nav style={{ 
+        width: '100%', 
+        maxWidth: '800px', 
+        display: 'flex', 
+        justifyContent: 'flex-end', 
+        gap: '1rem',
+        padding: '0 1rem'
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-main)' }}>
-          <Layout size={18} />
-          <span style={{ fontWeight: 500 }}>Dashboard Inicial</span>
-        </div>
-        <div style={{ marginTop: '1rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            Esta é a sua área restrita. No futuro, você poderá visualizar seus relatórios e configurações aqui.
-        </div>
-      </div>
+        {isAdmin && (
+          <button
+            onClick={onAdminClick}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              padding: '0.6rem 1.2rem',
+              borderRadius: '0.75rem',
+              border: '1px solid var(--accent)',
+              backgroundColor: 'transparent',
+              color: 'var(--accent)',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              fontSize: '0.9rem'
+            }}
+          >
+            <ShieldCheck size={16} />
+            Admin
+          </button>
+        )}
 
-      <button
-        onClick={onLogout}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '0.6rem',
-          padding: '0.8rem 1.8rem',
-          borderRadius: '0.75rem',
-          border: '1px solid rgba(239, 68, 68, 0.3)',
-          backgroundColor: 'transparent',
-          color: '#fca5a5',
-          fontWeight: 700,
-          cursor: 'pointer',
-          transition: 'all 0.2s',
-          letterSpacing: '0.01em'
-        }}
-        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.2)')}
-        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)')}
-      >
-        <LogOut size={18} />
-        Sair do Sistema
-      </button>
+        <button
+          onClick={onLogout}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            padding: '0.6rem 1.2rem',
+            borderRadius: '0.75rem',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            backgroundColor: 'transparent',
+            color: '#fca5a5',
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            fontSize: '0.9rem'
+          }}
+        >
+          <LogOut size={16} />
+          Sair
+        </button>
+      </nav>
+
+      {renderContent()}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+ import { useState } from 'react';
 import authService from '../services/authService';
 
 export const useAuth = (onLoginSuccess: (user: any) => void) => { // Hook para autenticação 

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
 
 @Component
 public class JwtUtils { // Classe que gera o token JWT
@@ -23,8 +26,13 @@ public class JwtUtils { // Classe que gera o token JWT
     private int jwtExpirationMs;
 
     public String generateJwtToken(User userPrincipal) { // Método que gera o token JWT
+        List<String> roles = userPrincipal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
         return Jwts.builder()
                 .subject((userPrincipal.getUsername()))
+                .claim("roles", roles)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(getSigningKey())

@@ -14,8 +14,11 @@ desktop.ini
 *.log
 
 # Project specific root bypasses
-demo/target/
+backend/target/
 frontend/node_modules/
 frontend/dist/
 frontend/.env.local
-demo/.env
+backend/.env
+
+backend/.gitignore
+frontend/.gitignore

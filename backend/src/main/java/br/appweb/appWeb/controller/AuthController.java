@@ -1,11 +1,19 @@
 package br.appweb.appWeb.controller;
 
 import br.appweb.appWeb.dto.JwtResponse;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.springframework.security.core.GrantedAuthority;
 import br.appweb.appWeb.dto.LoginRequest;
+import br.appweb.appWeb.dto.UserRegistrationRequest;
+import br.appweb.appWeb.dto.UserResponse;
+import br.appweb.appWeb.model.Role;
 import br.appweb.appWeb.model.User;
 import br.appweb.appWeb.service.UserService;
 import br.appweb.appWeb.util.JwtUtils;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +27,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
+import java.util.Set;
 
 @RestController // Indica que a classe é um controlador REST
 @RequestMapping("/api/auth") // Mapeia as requisições para /api/auth
 public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
@@ -44,18 +55,41 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken((User) authentication.getPrincipal());
 
         User userDetails = (User) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+
+        logger.info("Login bem-sucedido para o usuário: {}", userDetails.getEmail());
 
         return ResponseEntity.ok(new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getName(),
-                userDetails.getEmail()));
+                userDetails.getEmail(),
+                roles));
     }
 
     @PostMapping("/register") // Endpoint de registro
-    public ResponseEntity<?> register(@Valid @RequestBody User user) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserRegistrationRequest signUpRequest) {
         try {
+            User user = new User(signUpRequest.getName(), signUpRequest.getEmail(), signUpRequest.getPassword());
+            
+            // Se for o primeiro usuário do sistema, ganha ROLE_ADMIN automaticamente
+            if (userService.countUsers() == 0) {
+                user.setRoles(Set.of(Role.ROLE_USER, Role.ROLE_ADMIN));
+            } else {
+                user.setRoles(Set.of(Role.ROLE_USER));
+            }
+            
             User registeredUser = userService.registerUser(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+            
+            UserResponse response = new UserResponse(
+                registeredUser.getId(),
+                registeredUser.getName(),
+                registeredUser.getEmail(),
+                registeredUser.getRoles()
+            );
+            
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(Map.of("message", e.getMessage()));

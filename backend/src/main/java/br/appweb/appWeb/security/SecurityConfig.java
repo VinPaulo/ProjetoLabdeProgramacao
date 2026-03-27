@@ -14,6 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+// import java.util.List;
 
 @Configuration
 @EnableMethodSecurity
@@ -52,12 +58,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception { // Filtro de segurança
-        http.csrf(csrf -> csrf.disable()) // Desabilita CSRF (Cross-Site Request Forgery - falsificação de requisição)
+        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(csrf -> csrf.disable()) // Desabilita CSRF (Cross-Site Request Forgery - falsificação de
+                                              // requisição)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sessão
                                                                                                               // stateless
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll() // Permite login e
                                                                                                 // registro
-                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**").permitAll() // Permite Swagger
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() // Permite Swagger sem auth
                         .anyRequest().authenticated()); // Qualquer outra requisição requer autenticação
 
         http.authenticationProvider(authenticationProvider());
@@ -65,5 +73,18 @@ public class SecurityConfig {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() { // Configuração de CORS
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:5173")); // Frontends
+                                                                                                          // sugeridos
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

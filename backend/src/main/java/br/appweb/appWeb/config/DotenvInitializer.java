@@ -12,9 +12,9 @@ import java.util.Map;
 public class DotenvInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override
-    public void initialize(ConfigurableApplicationContext applicationContext) {
+    public void initialize(ConfigurableApplicationContext applicationContext) { // Inicializa o dotenv
         ConfigurableEnvironment environment = applicationContext.getEnvironment();
-        
+
         Dotenv dotenv = Dotenv.configure()
                 .directory("./")
                 .ignoreIfMissing()

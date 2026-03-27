@@ -2,6 +2,8 @@ package br.appweb.appWeb.service;
 
 import br.appweb.appWeb.model.User;
 import br.appweb.appWeb.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,31 +11,39 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Service // Indica que esta classe é um serviço
-public class UserService { // Classe que gerencia as operações de usuário
+@Service
+public class UserService {
 
-    private final UserRepository userRepository; // Repositório de usuário
-    private final PasswordEncoder passwordEncoder; // Codificador de senha
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
-    @Autowired // Injeção de dependência
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @Transactional(readOnly = true) // Transação de banco de dados
-    public Optional<User> authenticate(String email, String password) { // Método que autentica o usuário
+    @Transactional(readOnly = true)
+    public Optional<User> authenticate(String email, String password) {
         return userRepository.findByEmail(email)
                 .filter(user -> passwordEncoder.matches(password, user.getPassword()));
     }
 
-    @Transactional // Transação de banco de dados
-    public User registerUser(User user) { // Método que registra o usuário
-        if (userRepository.existsByEmail(user.getEmail())) { // Verifica se o usuário já existe
-            throw new RuntimeException("Usuário já existe com este e-mail"); // Lança uma exceção se o usuário já
-                                                                             // existir
+    @Transactional
+    public User registerUser(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new RuntimeException("Usuario ja existe com este e-mail");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Codifica a senha
-        return userRepository.save(user); // Salva o usuário
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User savedUser = userRepository.save(user);
+        logger.info("Novo usuario criado com sucesso: {}", savedUser.getEmail());
+        return savedUser;
+    }
+
+    @Transactional(readOnly = true)
+    public long countUsers() {
+        return userRepository.count();
     }
 }
