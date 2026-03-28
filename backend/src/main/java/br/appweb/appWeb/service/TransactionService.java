@@ -41,4 +41,18 @@ public class TransactionService { // Classe responsável por gerenciar as transa
 
         transactionRepository.delete(transaction);
     }
+
+    @Transactional(readOnly = true)
+    public java.math.BigDecimal calculateBalance(User user) {
+        List<Transaction> transactions = transactionRepository.findByUserOrderByDateDesc(user);
+        java.math.BigDecimal balance = java.math.BigDecimal.ZERO;
+        for (Transaction t : transactions) {
+            if (t.getType() == br.appweb.appWeb.model.TransactionType.INCOME) {
+                balance = balance.add(t.getAmount());
+            } else {
+                balance = balance.subtract(t.getAmount());
+            }
+        }
+        return balance;
+    }
 }

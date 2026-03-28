@@ -22,16 +22,18 @@ const Auth: React.FC<AuthProps> = ({ onLoginSuccess }) => {
   } = useAuth(onLoginSuccess);
 
   return (
-    <div className="glass" style={{
+    <div className="glass animate-fade-in" style={{
       padding: '2.5rem',
-      borderRadius: '1.5rem',
-      width: '100%',
-      maxWidth: '400px',
+      borderRadius: '2rem',
+      width: '95%', // Usa quase toda a largura em telas pequenas
+      maxWidth: '420px', // Limita em telas grandes
+      margin: 'auto', // Centralização extra
+      boxShadow: '0 32px 64px rgba(0,0,0,0.4)',
       transition: 'all 0.3s ease'
     }}>
       <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
         <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.75rem', color: 'var(--accent)', letterSpacing: '-0.02em' }}>
-          {isLogin ? 'Bem-vindo' : 'Crie sua conta'}
+          {isLogin ? 'Bem-vindo ao p.Wallet!' : 'Crie sua conta'}
         </h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>
           {isLogin ? 'Entre com suas credenciais para acessar' : 'Preencha os dados abaixo para começar'}

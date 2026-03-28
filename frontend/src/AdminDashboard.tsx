@@ -1,6 +1,7 @@
 import React from 'react';
-import { Users, Settings, LogOut, ArrowLeft, ShieldCheck, UserPlus, Trash2, TrendingUp, Activity } from 'lucide-react';
+import { Users, Settings, LogOut, ArrowLeft, ShieldCheck, UserPlus, Trash2, TrendingUp, Activity, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useAdminDashboard } from './hooks/useAdminDashboard';
+import { useSystemSettings } from './hooks/useSystemSettings';
 import type { UserAdminInfo } from './services/adminService';
 
 interface AdminDashboardProps {
@@ -14,10 +15,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onBack, onLogout 
         subView, setSubView,
         stats,
         users,
-        loading,
+        loading: adminLoading,
         handlePromote,
         handleDelete
     } = useAdminDashboard();
+
+    const {
+        loading: settingsLoading,
+        toggleSetting,
+        isEnabled
+    } = useSystemSettings();
+
+    const loading = adminLoading || settingsLoading;
 
     const renderMain = () => (
         <>
@@ -80,19 +89,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onBack, onLogout 
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Lista de usuários e permissões</p>
                 </div>
 
-                <div className="glass-card" style={{
-                    padding: '2rem',
-                    borderRadius: '1.25rem',
-                    backgroundColor: 'var(--input-bg)',
-                    border: '1px solid var(--border-subtle)',
-                    cursor: 'pointer',
-                    transition: 'all 0.3s ease',
-                    textAlign: 'center',
-                    opacity: 0.5
-                }}>
+                <div 
+                    onClick={() => setSubView('settings')}
+                    className="glass-card" 
+                    style={{
+                        padding: '2rem',
+                        borderRadius: '1.25rem',
+                        backgroundColor: 'var(--input-bg)',
+                        border: '1px solid var(--border-subtle)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        textAlign: 'center'
+                    }}
+                >
                     <Settings size={32} color="var(--accent)" style={{ marginBottom: '1rem' }} />
                     <h3 style={{ marginBottom: '0.5rem' }}>Configurações</h3>
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Ajustes globais (Em breve)</p>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Ajustes globais do sistema</p>
                 </div>
             </div>
         </>
@@ -148,6 +160,68 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onBack, onLogout 
         </div>
     );
 
+    const renderSettings = () => (
+        <div style={{ textAlign: 'left' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>Configurações Globais</h2>
+                <button onClick={() => setSubView('main')} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontWeight: 600 }}>
+                    Voltar
+                </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '1.5rem',
+                    borderRadius: '1rem',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    border: '1px solid var(--border-subtle)'
+                }}>
+                    <div>
+                        <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>Habilitar Novos Cadastros</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Permitir que novas pessoas criem conta no sistema</div>
+                    </div>
+                    <button 
+                        onClick={() => toggleSetting('registration_enabled')}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: isEnabled('registration_enabled') ? '#4ade80' : 'var(--text-muted)' }}
+                    >
+                        {isEnabled('registration_enabled') ? <ToggleRight size={40} /> : <ToggleLeft size={40} />}
+                    </button>
+                </div>
+
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    padding: '1.5rem',
+                    borderRadius: '1rem',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    border: '1px solid var(--border-subtle)'
+                }}>
+                    <div>
+                        <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>Modo de Manutenção</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Bloquear acesso geral para manutenção técnica</div>
+                    </div>
+                    <button 
+                        onClick={() => toggleSetting('maintenance_mode')}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: isEnabled('maintenance_mode') ? '#fbbf24' : 'var(--text-muted)' }}
+                    >
+                        {isEnabled('maintenance_mode') ? <ToggleRight size={40} /> : <ToggleLeft size={40} />}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
+    const renderContent = () => {
+        if (subView === 'main') return renderMain();
+        if (subView === 'users') return renderUsers();
+        if (subView === 'settings') return renderSettings();
+        return null;
+    };
+
     return (
         <div className="glass" style={{
             padding: '3rem',
@@ -200,7 +274,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, onBack, onLogout 
                 </p>
             </header>
 
-            {loading ? <p>Carregando...</p> : subView === 'main' ? renderMain() : renderUsers()}
+            {loading ? <p>Carregando...</p> : renderContent()}
 
             <div style={{ marginTop: '2rem' }}>
                 <button
