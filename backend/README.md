@@ -1,20 +1,21 @@
 # Projeto LabProg - Backend
 
-Este é o backend do sistema de autenticação, construído com Spring Boot 3 e PostgreSQL.
+Este é o backend do sistema P.Wallet, construído para fornecer uma API robusta e segura.
 
-## Requisitos
-- Java 17
-- PostgreSQL rodando localmente
+## Tecnologias e Frameworks Utilizados
+- **Linguagem:** Java 17
+- **Framework:** Spring Boot 3
+- **Banco de Dados:** PostgreSQL
 
 ## Configuração
 O sistema utiliza variáveis de ambiente para configuração do banco de dados.
-Certifique-se de que o arquivo `.env` na raiz da pasta `demo` contém as credenciais corretas.
+Certifique-se de que o arquivo `.env` na raiz da pasta `backend` contém as credenciais corretas.
 
-## Como rodar o Backend
+## Como rodar o Backend localmente
 
 1. Entre na pasta do projeto:
    ```bash
-   cd demo
+   cd backend
    ```
 
 2. Compile e rode a aplicação usando o Maven Wrapper:
@@ -22,10 +23,27 @@ Certifique-se de que o arquivo `.env` na raiz da pasta `demo` contém as credenc
    .\mvnw spring-boot:run
    ```
 
-3. O servidor iniciará em per padrão na porta **8080**.
+3. O servidor iniciará por padrão na porta **8080**.
+
+## Executando os Testes
+Para rodar os testes unitários e de integração (JUnit/Mockito/Testcontainers), utilize o comando na pasta do backend:
+```bash
+.\mvnw test
+```
+
+## Como subir via Docker
+O projeto principal conta com um `docker-compose.yml` que sobe toda a stack integrada (Banco de Dados, Backend e Frontend).
+Para acessar, vá até a **raiz do repositório** (uma pasta acima do backend) e execute:
+```bash
+docker-compose up -d --build
+```
+Isso iniciará:
+- Banco de dados PostgreSQL (porta 5432)
+- Backend Spring Boot (porta 8080)
+- Frontend React (porta 80)
 
 ## Documentação da API (Swagger)
-Com o sistema rodando, acesse:
+Com o backend rodando, acesse:
 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ## Estrutura do Projeto

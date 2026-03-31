@@ -6,7 +6,8 @@ import br.appweb.appWeb.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.lang.NonNull;
+import java.util.Objects;
 import java.util.List;
 
 @Service
@@ -31,9 +32,9 @@ public class TransactionService { // Classe responsável por gerenciar as transa
     }
 
     @Transactional
-    public void delete(Long id, User user) {
-        Transaction transaction = transactionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Transação não encontrada"));
+    public void delete(@NonNull Long id, @NonNull User user) {
+        Transaction transaction = Objects.requireNonNull(transactionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Transação não encontrada")));
 
         if (!transaction.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Operação não permitida");
@@ -44,15 +45,14 @@ public class TransactionService { // Classe responsável por gerenciar as transa
 
     @Transactional(readOnly = true)
     public java.math.BigDecimal calculateBalance(User user) {
-        List<Transaction> transactions = transactionRepository.findByUserOrderByDateDesc(user);
-        java.math.BigDecimal balance = java.math.BigDecimal.ZERO;
-        for (Transaction t : transactions) {
-            if (t.getType() == br.appweb.appWeb.model.TransactionType.INCOME) {
-                balance = balance.add(t.getAmount());
-            } else {
-                balance = balance.subtract(t.getAmount());
-            }
-        }
-        return balance;
+        java.math.BigDecimal income = transactionRepository.sumAmountByUserAndType(user, br.appweb.appWeb.model.TransactionType.INCOME);
+        java.math.BigDecimal expense = transactionRepository.sumAmountByUserAndType(user, br.appweb.appWeb.model.TransactionType.EXPENSE);
+        return (income != null ? income : java.math.BigDecimal.ZERO)
+                .subtract(expense != null ? expense : java.math.BigDecimal.ZERO);
+    }
+
+    @Transactional(readOnly = true)
+    public long countTransactions() {
+        return transactionRepository.count();
     }
 }

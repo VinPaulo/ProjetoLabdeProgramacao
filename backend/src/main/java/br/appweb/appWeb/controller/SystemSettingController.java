@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import org.springframework.lang.NonNull;
 
 @RestController
 @RequestMapping("/api/admin/settings")
@@ -24,9 +26,12 @@ public class SystemSettingController {
     }
 
     @PutMapping("/{key}")
-    public ResponseEntity<?> updateSetting(@PathVariable String key, @RequestBody Map<String, String> body) {
+    public ResponseEntity<?> updateSetting(@NonNull @PathVariable String key, @RequestBody Map<String, String> body) {
         String value = body.get("value");
-        settingService.updateSetting(key, value);
+        if (value == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "O campo 'value' é obrigatório"));
+        }
+        settingService.updateSetting(Objects.requireNonNull(key), value);
         return ResponseEntity.ok(Map.of("message", "Configuração " + key + " atualizada para " + value));
     }
     

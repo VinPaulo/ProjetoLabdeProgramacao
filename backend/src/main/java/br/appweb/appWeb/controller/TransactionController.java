@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.lang.NonNull;
+import java.util.Objects;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,9 +53,9 @@ public class TransactionController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@NonNull @PathVariable Long id) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        transactionService.delete(id, user);
+        transactionService.delete(Objects.requireNonNull(id), Objects.requireNonNull(user));
         return ResponseEntity.noContent().build();
     }
 

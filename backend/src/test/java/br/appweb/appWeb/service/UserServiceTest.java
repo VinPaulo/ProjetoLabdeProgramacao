@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,22 +35,24 @@ class UserServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void registerUser_Success() {
         User user = new User("Test User", "test@example.com", "Password123");
         user.setRoles(Set.of(Role.ROLE_USER));
 
         when(userRepository.existsByEmail(user.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(any())).thenReturn("encodedPassword");
-        when(userRepository.save(any())).thenReturn(user);
+        when(userRepository.save(any(User.class))).thenReturn(user);
 
-        User savedUser = userService.registerUser(user);
+        User savedUser = Objects.requireNonNull(userService.registerUser(user));
 
         assertNotNull(savedUser);
-        assertEquals("test@example.com", savedUser.getEmail());
-        verify(userRepository, times(1)).save(any());
+        assertEquals("test@example.com", Objects.requireNonNull(savedUser).getEmail());
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
+    @SuppressWarnings("null")
     void registerUser_DuplicateEmail_ThrowsException() {
         User user = new User("Test User", "test@example.com", "Password123");
 
@@ -59,6 +62,7 @@ class UserServiceTest {
     }
 
     @Test
+    @SuppressWarnings("null")
     void authenticate_Success() {
         User user = new User("Test User", "test@example.com", "encodedPassword");
         

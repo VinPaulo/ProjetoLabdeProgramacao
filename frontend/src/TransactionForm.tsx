@@ -7,6 +7,18 @@ interface TransactionFormProps {
     onSuccess: () => void;
 }
 
+const labelStyle: React.CSSProperties = {
+    fontSize: '0.85rem',
+    fontWeight: 600,
+    color: 'var(--text-muted)',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    marginBottom: '0.5rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
 const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) => {
     const {
         description, setDescription,
@@ -18,18 +30,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
         handleSubmit
     } = useTransactionForm({ onSuccess });
 
-    const labelStyle: React.CSSProperties = {
-        fontSize: '0.85rem',
-        fontWeight: 600,
-        color: 'var(--text-muted)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        marginBottom: '0.5rem',
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em'
-    };
-
     return (
         <div className="glass animate-fade-in" style={{
             padding: '3rem',
@@ -39,7 +39,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
             position: 'relative',
             overflow: 'hidden'
         }}>
-            {/* Background Accent Glow */}
+            {/* Background Accent Glow - Dynamic Logic in JSX is simple/visual */}
             <div style={{
                 position: 'absolute',
                 top: '-10%',
@@ -54,23 +54,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
             }} />
 
             <header style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '2.5rem', position: 'relative', zIndex: 1 }}>
-                <button 
-                    onClick={onBack} 
-                    style={{ 
-                        background: 'rgba(255,255,255,0.05)', 
-                        border: '1px solid var(--border-subtle)', 
-                        color: 'var(--text-main)', 
-                        cursor: 'pointer',
-                        padding: '0.6rem',
-                        borderRadius: '0.8rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        transition: 'all 0.2s'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)'}
-                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.05)'}
-                >
+                <button onClick={onBack} className="btn-icon">
                     <ArrowLeft size={20} />
                 </button>
                 <h1 style={{ fontSize: '1.75rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>Nova Transação</h1>
@@ -78,15 +62,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
 
             <form onSubmit={handleSubmit} style={{ position: 'relative', zIndex: 1 }}>
                 {/* Segmented Control Toggle */}
-                <div style={{ 
-                    display: 'flex', 
-                    position: 'relative',
-                    marginBottom: '2.5rem', 
-                    backgroundColor: 'rgba(0,0,0,0.2)', 
-                    padding: '4px', 
-                    borderRadius: '1rem',
-                    border: '1px solid var(--border-subtle)'
-                }}>
+                <div style={{ display: 'flex', position: 'relative', marginBottom: '2.5rem', backgroundColor: 'rgba(0,0,0,0.2)', padding: '4px', borderRadius: '1rem', border: '1px solid var(--border-subtle)' }}>
                     <div style={{
                         position: 'absolute',
                         left: type === 'EXPENSE' ? '4px' : '50%',
@@ -100,51 +76,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
                         zIndex: 0
                     }} />
                     
-                    <button
-                        type="button"
-                        onClick={() => setType('EXPENSE')}
-                        style={{
-                            flex: 1,
-                            padding: '1rem',
-                            borderRadius: '0.8rem',
-                            border: 'none',
-                            backgroundColor: 'transparent',
-                            color: 'white',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            zIndex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.6rem',
-                            transition: 'color 0.3s'
-                        }}
-                    >
-                        <ArrowDownCircle size={18} opacity={type === 'EXPENSE' ? 1 : 0.6} />
-                        Gasto
+                    <button type="button" onClick={() => setType('EXPENSE')} style={{ flex: 1, padding: '1rem', border: 'none', backgroundColor: 'transparent', color: 'white', fontWeight: 700, cursor: 'pointer', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
+                        <ArrowDownCircle size={18} opacity={type === 'EXPENSE' ? 1 : 0.6} /> Gasto
                     </button>
-                    <button
-                        type="button"
-                        onClick={() => setType('INCOME')}
-                        style={{
-                            flex: 1,
-                            padding: '1rem',
-                            borderRadius: '0.8rem',
-                            border: 'none',
-                            backgroundColor: 'transparent',
-                            color: 'white',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                            zIndex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '0.6rem',
-                            transition: 'color 0.3s'
-                        }}
-                    >
-                        <ArrowUpCircle size={18} opacity={type === 'INCOME' ? 1 : 0.6} />
-                        Ganho
+                    <button type="button" onClick={() => setType('INCOME')} style={{ flex: 1, padding: '1rem', border: 'none', backgroundColor: 'transparent', color: 'white', fontWeight: 700, cursor: 'pointer', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem' }}>
+                        <ArrowUpCircle size={18} opacity={type === 'INCOME' ? 1 : 0.6} /> Ganho
                     </button>
                 </div>
 
@@ -152,32 +88,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
                     <label htmlFor="description" style={labelStyle}>
                         <PlusCircle size={14} color="#60a5fa" /> Descrição
                     </label>
-                    <input
-                        id="description"
-                        type="text"
-                        required
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        placeholder="Ex: Aluguel, Supermercado..."
-                        className="input-field"
-                    />
+                    <input id="description" type="text" required value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Ex: Aluguel, Supermercado..." className="input-field" />
                 </div>
 
                 <div style={{ marginBottom: '1.5rem' }}>
                     <label htmlFor="amount" style={labelStyle}>
                         <DollarSign size={14} color="#facc15" /> Valor (R$)
                     </label>
-                    <input
-                        id="amount"
-                        type="number"
-                        step="0.01"
-                        required
-                        value={amount}
-                        onChange={(e) => setAmount(e.target.value)}
-                        placeholder="0.00"
-                        className="input-field"
-                        style={{ fontSize: '1.25rem', fontWeight: 700 }}
-                    />
+                    <input id="amount" type="number" step="0.01" required value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0.00" className="input-field" style={{ fontSize: '1.25rem', fontWeight: 700 }} />
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.25rem', marginBottom: '2.5rem' }}>
@@ -185,27 +103,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
                         <label htmlFor="date" style={labelStyle}>
                             <Calendar size={14} color="#a855f7" /> Data
                         </label>
-                        <input
-                            id="date"
-                            type="date"
-                            required
-                            value={date}
-                            onChange={(e) => setDate(e.target.value)}
-                            className="input-field"
-                        />
+                        <input id="date" type="date" required value={date} onChange={(e) => setDate(e.target.value)} className="input-field" />
                     </div>
                     <div>
                         <label htmlFor="category" style={labelStyle}>
                             <Tag size={14} color="#f472b6" /> Categoria
                         </label>
                         <div style={{ position: 'relative' }}>
-                            <select
-                                id="category"
-                                value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                className="input-field"
-                                style={{ appearance: 'none' }}
-                            >
+                            <select id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="input-field" style={{ appearance: 'none' }}>
                                 <option value="Alimentação">Alimentação</option>
                                 <option value="Lazer">Lazer</option>
                                 <option value="Transporte">Transporte</option>
@@ -215,41 +120,15 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onBack, onSuccess }) 
                                 <option value="Salário">Salário</option>
                                 <option value="Outros">Outros</option>
                             </select>
-                            <div style={{ 
-                                position: 'absolute', 
-                                right: '1rem', 
-                                top: '50%', 
-                                transform: 'translateY(-50%)', 
-                                pointerEvents: 'none',
-                                color: 'var(--text-muted)'
-                            }}>
+                            <div style={{ position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', color: 'var(--text-muted)' }}>
                                 <ArrowDownCircle size={14} />
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="btn-primary"
-                    style={{ 
-                        width: '100%', 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        gap: '0.75rem',
-                        height: '3.5rem'
-                    }}
-                >
-                    {loading ? (
-                        <>Carregando...</>
-                    ) : (
-                        <>
-                            <Wallet size={20} />
-                            Confirmar Transação
-                        </>
-                    )}
+                <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', height: '3.5rem' }}>
+                    {loading ? <>Carregando...</> : <><Wallet size={20} /> Confirmar Transação</>}
                 </button>
             </form>
         </div>

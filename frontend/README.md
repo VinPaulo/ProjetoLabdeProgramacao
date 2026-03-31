@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# Projeto LabProg - Frontend (P.Wallet)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este é o frontend da aplicação web P.Wallet, a interface de usuário para o sistema de finanças.
 
-Currently, two official plugins are available:
+## Tecnologias e Frameworks Utilizados
+- **Linguagem:** TypeScript / JavaScript
+- **Framework:** React 19
+- **Build Tool:** Vite
+- **Estilização:** CSS Vanilla e Lucide React para ícones
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Como rodar o Frontend localmente
 
-## React Compiler
+1. Entre na pasta do frontend:
+   ```bash
+   cd frontend
+   ```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
 
-## Expanding the ESLint configuration
+3. Inicie o servidor de desenvolvimento:
+   ```bash
+   npm run dev
+   ```
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+A aplicação estará disponível na porta configurada pelo Vite (geralmente `http://localhost:5173`).
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Executando os Testes
+A aplicação utiliza Vitest e React Testing Library para os testes automatizados.
+Para executar a suíte de testes, utilize o comando na pasta doc frontend:
+```bash
+npm run test
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Como subir via Docker
+O projeto principal conta com um `docker-compose.yml` que sobe toda a stack integrada (Banco de Dados, Backend e Frontend).
+Para inicializar os containers, vá até a **raiz do repositório** (uma pasta acima do frontend) e execute:
+```bash
+docker-compose up -d --build
 ```
+O frontend estará acessível na porta configurada (geralmente a porta **80** via Nginx configurado no Dockerfile).
+
+## Scripts Úteis
+- `npm run dev`: Inicia o servidor de desenvolvimento.
+- `npm run build`: Faz o build de produção da aplicação, compilando o TypeScript e empacotando com o Vite.
+- `npm run lint`: Analisa o código com o ESLint.
+- `npm run test`: Executa os testes unitários e de componentes usando Vitest.
+- `npm run preview`: Visualiza o build de produção localmente simulando o ambiente real.
