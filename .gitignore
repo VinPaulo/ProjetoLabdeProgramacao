@@ -22,3 +22,5 @@ backend/.env
 
 backend/.gitignore
 frontend/.gitignore
+
+.gitignore
